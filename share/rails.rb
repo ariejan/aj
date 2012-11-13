@@ -1,52 +1,39 @@
 gem_group :development, :test do
-  gem 'jasmine'
   gem 'factory_girl_rails'
   gem 'rspec-rails'
 end
 
 gem_group :development do
   gem 'guard-rspec'
-  gem 'guard-pow'
-  gem 'jasmine-headless-webkit'
-  gem 'guard-jasmine-headless-webkit'
-  gem 'growl'
+  gem 'haml-rails'
 end
 
 gem_group :test do
   gem 'database_cleaner'
   gem 'capybara'
   gem 'shoulda-matchers'
-  gem 'capybara-webkit'
 end
 
 gem_group :assets do
-  gem 'rocks'
   gem 'bourbon'
+  gem 'neat'
 end
 
 gem 'devise'
 gem 'yard-rails', require: false
 gem 'haml'
-gem 'haml-rails'
 gem 'draper'
 gem 'kaminari'
-gem 'simple-navigation'
 gem 'simple_form'
 
 # Rspec support files
-create_file 'spec/support/capybara_headless_webkit', <<-RUBY
-RSpec.configure do |config|
-  Capybara.javascript_driver = :webkit
-end
-RUBY
-
-create_file 'spec/support/factory_girl.rb', <<-RUBY
+create_file 'spec/support/factory_girl.rb', <<-EOS
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
 end
-RUBY
+EOS
 
-create_file 'spec/support/database_cleaner.rb', <<-RUBY
+create_file 'spec/support/database_cleaner.rb', <<-EOS
 RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
@@ -66,20 +53,24 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 end
-RUBY
+EOS
 
-create_file 'spec/support/devise.rb', <<-RUBY
+create_file 'spec/support/devise.rb', <<-EOS
 RSpec.configure do |config|
   config.include Devise::TestHelpers, type: :controller
 end
-RUBY
+EOS
 
 inject_into_file 'config/environments/test.rb', before: /^end$/ do
-  "\n  config.action_mailer.default_url_options = { host: 'example.com' }\n"
+  "\n  config.action_mailer.default_url_options = { host: 'test.host' }\n"
 end
 
 inject_into_file 'config/environments/development.rb', before: /^end$/ do
   "\n  config.action_mailer.default_url_options = { host: 'localhost:3000' }\n"
+end
+
+inject_into_file 'config/environments/production.rb', before: /^end$/ do
+  "\n  config.action_mailer.default_url_options = { host: 'change-me.com' }\n"
 end
 
 inject_into_file 'config/application.rb', after: 'config.assets.enabled = true' do
@@ -117,7 +108,7 @@ run 'cp config/database.yml config/database.yml.example'
 gsub_file 'config/database.yml', /  username: .+$/, "  username: #{role}"
 append_to_file '.gitignore', 'config/database.yml'
 
-run 'bundle install --binstubs'
+run 'bundle install'
 run 'bundle update'
 
 rake 'db:create'
@@ -127,8 +118,6 @@ append_to_file '.rspec', '--order rand'
 generate 'devise:install'
 generate 'devise user'
 generate 'simple_form:install'
-generate 'navigation_config'
-generate 'jasmine:install'
 generate 'kaminari:config'
 run 'bundle exec guard init'
 
