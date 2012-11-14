@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while :
+do
+    clear
+    git --no-pager log --graph --all --pretty=format:"%C(yellow)%h%C(reset) %C(green)%ar%C(reset) %C(bold blue)%an%C(reset) %C(red)%d%C(reset) %s" --graph --abbrev-commit --decorate
+    sleep 1
+done
