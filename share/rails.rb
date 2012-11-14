@@ -98,7 +98,7 @@ class ApplicationDecorator < Draper::Base
 end
 RUBY
 
-remove_file 'README'
+remove_file 'README.rdoc'
 remove_file 'doc/README_FOR_APP'
 remove_file 'public/index.html'
 remove_file 'app/assets/images/rails.png'
@@ -106,6 +106,7 @@ remove_file 'app/assets/images/rails.png'
 role = ask('What role should be used for the database configuration?')
 run 'cp config/database.yml config/database.yml.example'
 gsub_file 'config/database.yml', /  username: .+$/, "  username: #{role}"
+gsub_file 'config/database.yml', /  pool: 5$/, "  pool: 5\n  host: localhost"
 append_to_file '.gitignore', 'config/database.yml'
 
 run 'bundle install'
@@ -124,6 +125,6 @@ run 'bundle exec guard init'
 rake 'db:migrate'
 rake 'db:test:prepare'
 
-git :init
-git add: '.'
-git commit: '-aqm "Initial commit of new Rails app"'
+# git :init
+# git add: '.'
+# git commit: '-aqm "Initial commit of new Rails app"'
